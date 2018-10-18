@@ -1,0 +1,8 @@
+11:10:33 **** Incremental Build of configuration Debug for project axi_quad_spi_interrupts_test ****
+make pre-build main-build 
+a9-linaro-pre-build-step
+' '
+make: Nothing to be done for `main-build'.
+
+11:10:33 Build Finished (took 131ms)
+

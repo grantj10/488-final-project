@@ -1,0 +1,52 @@
+#include <stdio.h>
+#include <math.h>
+#include "sound_dist.h"
+
+#define pi 3.14159265359
+
+void calc_sound_dist() {
+	double micH1 = 0.0, micH2 = 4.0, mic3 = 4.0, mic4 = 8.0, micW1 = 4.0, micW2 = 0.0, micW3 = 8.0, micW4 = 4.0;
+	double timeRec1 = 0.0, timeRec2 = 0.0, timeRec3 = 0.0, timeRec4 = 0.0;
+	double hypB = sqrt((pow(4, 2) + pow(4, 2)));
+	double dis12 = sqrt((pow(4,2) + pow(hypB,2))); // distance between mic 1 and mic 2
+	double dis13 = dis12;                          // distance between mic 1 and mic 3
+	double dis24 = dis12;                          // distance between mic 2 and mic 4
+	double dis34 = dis12;                          // distance between mic 3 and mic 4
+	double dis14 = 8.0;                            // distance between mic 1 and mic 4
+	double dis23 = 8.0;                            // distance between mic 2 and mic 3
+	double c = 343.00;                             // speed of sound through air
+	double sourcePower = 4*pi;                      // power of the source signal in Watts
+	double intensity1 = 1.0, intensity2 = 1.0, intensity3 = 1.0, intensity4 = 1.0;
+	double S1 = sqrt(sourcePower / (4 * pi*intensity1)); // distance from sound source
+	double S2 = sqrt(sourcePower / (4 * pi*intensity2)); // distance from sound source
+	double S3 = sqrt(sourcePower / (4 * pi*intensity3)); // distance from sound source
+	double S4 = sqrt(sourcePower / (4 * pi*intensity4)); // distance from sound source
+	double angle1 = (pow(dis14, 2) + pow(S4, c) - pow(S1, 2)) / (2 * dis14*S4);
+	double angle2 = (pow(dis23, 2) + pow(S3, c) - pow(S2, 2)) / (2 * dis23*S3);
+	double angle3 = (pow(dis23, 2) + pow(S2, c) - pow(S3, 2)) / (2 * dis23*S2);
+	double angle4 = (pow(dis14, 2) + pow(S1, c) - pow(S4, 2)) / (2 * dis14*S1);
+	printf("Distance between source and mic 1: %4.3lf meters\nDistance between source and mic 2: %4.3lf meters\nDistance between source and mic 3: %4.3lf meters\nDistance between source and mic 4: %4.3lf meters\n\n", S1, S2, S3, S4);
+	printf("Angle to the source from mic 1: %4.3lf degrees\nAngle to the source from mic 2: %4.3lf degrees\nAngle to the source from mic 3: %4.3lf degrees\nAngle to the source from mic 4: %4.3lf degrees\n\n", angle1, angle2, angle3, angle4);
+	//
+	//       __________________
+	//     / |     /         / |
+	//    /  |    /         /  |
+	//	 /-------4---------/   |
+	//	|    |   |         |   |
+	//	|    LU  |    RU   |   |
+	//	|  2 |   |         | 3 |
+	//	|    |___|_________|___|
+	//	|    /   |         |  /
+	//	|   /    |         | /
+	//	|  / LB  |    RB   |/
+	//	| /      |         |
+	//	---------1---------
+
+	//	If mic 1 detects before mic 4, then it will be in the lower half of quadrants (facing the box LB and RB)
+	//  If mic 4 detects before mic 1, then it will be in the upper half of quadrants (facing the box LU and RU)
+	//  If mic 2 detects before mic 3, then it will be in the left half of quadrants (facing the box LU and LB)
+	//  If mic 3 detects before mic 2, then it will be in the right half of quadrants (facing the box RU and RB)
+
+	// Intensity can be used to determine length away: Power of source/ (4pi * r^2) = Intensity
+	return 0;
+}

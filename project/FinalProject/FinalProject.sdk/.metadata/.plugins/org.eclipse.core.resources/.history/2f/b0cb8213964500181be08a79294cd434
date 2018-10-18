@@ -1,0 +1,77 @@
+/*
+ * mic.h
+ *
+ *  Created on: Apr 21, 2018
+ *      Author: drp1
+ */
+
+#ifndef SRC_MIC_H_
+#define SRC_MIC_H_
+
+#include "xparameters.h"
+#include "xspi.h"
+#include "xspi_l.h"
+
+/************************** Constant Definitions *****************************/
+
+#define NUM_MICS 4
+
+/*
+ *  This is the size of the buffer to be transmitted/received in this example.
+ */
+#define BUFFER_SIZE 2
+
+/*
+ * The following constant defines the slave select signal that is used to
+ * to select the Flash device on the SPI bus, this signal is typically
+ * connected to the chip select of the device.
+ */
+#define MIC_SPI_SELECT 0x01
+#define MICBUFFSIZE 1024
+#define SAMPLERATE 40000
+
+
+/**************************** Type Definitions *******************************/
+
+/*
+ * The following data type is used to send and receive data on the SPI
+ * interface.
+ */
+typedef u8 DataBuffer[BUFFER_SIZE];
+
+
+
+/************************** Variable Definitions *****************************/
+
+/*
+ * The instances to support the device drivers are global such that the
+ * are initialized to zero each time the program runs.
+ */
+XSpi SpiInstance[4];	 /* The instance of the SPI device */
+
+/*
+ * The following variables are used to read and write to the  Spi device, they
+ * are global to avoid having large buffers on the stack.
+ */
+u8 ReadBuffer[BUFFER_SIZE];
+
+
+u16 MicData[NUM_MICS][MICBUFFSIZE];
+
+u8 MicSpiId[NUM_MICS] = {
+		XPAR_SPI_0_DEVICE_ID,
+		XPAR_SPI_1_DEVICE_ID,
+		XPAR_SPI_2_DEVICE_ID,
+		XPAR_SPI_3_DEVICE_ID};
+
+
+/************************** Function Prototypes ******************************/
+void send_data();
+void read_mic();
+int mic_setup();
+void send_data_bytes();
+
+
+
+
+#endif /* SRC_MIC_H_ */

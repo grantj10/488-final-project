@@ -1,0 +1,15 @@
+21:27:39 **** Build of configuration Debug for project axi_quad_spi_test_bsp_xspi_selftest_example_1 ****
+make pre-build main-build 
+a9-linaro-pre-build-step
+' '
+'Building file: ../src/xspi_selftest_example.c'
+'Invoking: ARM v7 gcc compiler'
+arm-none-eabi-gcc -Wall -O0 -g3 -c -fmessage-length=0 -MT"src/xspi_selftest_example.o" -mcpu=cortex-a9 -mfpu=vfpv3 -mfloat-abi=hard -I../../axi_quad_spi_test_bsp/ps7_cortexa9_0/include -MMD -MP -MF"src/xspi_selftest_example.d" -MT"src/xspi_selftest_example.o" -o "src/xspi_selftest_example.o" "../src/xspi_selftest_example.c"
+../src/xspi_selftest_example.c:63:25: fatal error: xparameters.h: No such file or directory
+ #include "xparameters.h"
+                         ^
+compilation terminated.
+make: *** [src/xspi_selftest_example.o] Error 1
+
+21:27:39 Build Finished (took 185ms)
+

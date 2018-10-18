@@ -1,0 +1,15 @@
+10:31:13 **** Build of configuration Debug for project standalone_bsp_0_xspi_intel_flash_example_1 ****
+make pre-build main-build 
+a9-linaro-pre-build-step
+' '
+'Building file: ../src/xspi_intel_flash_example.c'
+'Invoking: ARM v7 gcc compiler'
+arm-none-eabi-gcc -Wall -O0 -g3 -c -fmessage-length=0 -MT"src/xspi_intel_flash_example.o" -mcpu=cortex-a9 -mfpu=vfpv3 -mfloat-abi=hard -I../../standalone_bsp_0/ps7_cortexa9_0/include -MMD -MP -MF"src/xspi_intel_flash_example.d" -MT"src/xspi_intel_flash_example.o" -o "src/xspi_intel_flash_example.o" "../src/xspi_intel_flash_example.c"
+../src/xspi_intel_flash_example.c:72:61: fatal error: xintc.h: No such file or directory
+ #include "xintc.h"  /* Interrupt controller device driver */
+                                                             ^
+compilation terminated.
+make: *** [src/xspi_intel_flash_example.o] Error 1
+
+10:31:13 Build Finished (took 228ms)
+

@@ -1,0 +1,15 @@
+/*
+ * utils.h
+ *
+ *  Created on: Apr 21, 2018
+ *      Author: drp1
+ */
+
+#ifndef SRC_UTILS_H_
+#define SRC_UTILS_H_
+
+//printf("Leading text "BYTE_TO_BINARY_PATTERN, BYTE_TO_BINARY(byte));
+//printf("m: "BYTE_TO_BINARY_PATTERN" "BYTE_TO_BINARY_PATTERN"\n",
+//  BYTE_TO_BINARY(m>>8), BYTE_TO_BINARY(m));
+
+#endif /* SRC_UTILS_H_ */

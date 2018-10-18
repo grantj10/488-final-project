@@ -1,0 +1,126 @@
+/*
+ * mic.c
+ *
+ *  Created on: Apr 21, 2018
+ *      Author: drp1
+ */
+
+#include "mic.h"
+#include <stdio.h>
+#include "xil_printf.h"
+#include "sleep.h"
+#include "xtime_l.h"
+
+const u8 MicSpiId[] ={
+		 XPAR_SPI_0_DEVICE_ID,
+		 XPAR_SPI_1_DEVICE_ID,
+		 XPAR_SPI_2_DEVICE_ID,
+		 XPAR_SPI_3_DEVICE_ID};
+
+
+int mic_setup()
+{
+	int Status;
+
+	for (int i = 0; i < NUM_MICS; ++i)
+	{
+
+		XSpi_Config *ConfigPtr;	/* Pointer to Configuration data */
+
+		/*
+		 * Initialize the SPI driver so that it is  ready to use.
+		 */
+		ConfigPtr = XSpi_LookupConfig(MicSpiId[i]);
+		if (ConfigPtr == NULL)
+		{
+			printf("XSpi_LookupConfig: XST_DEVICE_NOT_FOUND\r\n");
+			return XST_DEVICE_NOT_FOUND;
+		}
+
+		Status = XSpi_CfgInitialize(SpiInstance + i, ConfigPtr, ConfigPtr->BaseAddress);
+		if (Status != XST_SUCCESS)
+		{
+			printf("XSpi_CfgInitialize: XST_FAILURE\r\n");
+			return XST_FAILURE;
+		}
+
+
+		/*
+		 * Set the Spi device as a master and in loopback mode.
+		 */
+		Status = XSpi_SetOptions(SpiInstance + i, XSP_MASTER_OPTION
+				| XSP_CLK_ACTIVE_LOW_OPTION
+	//				| XSP_CLK_PHASE_1_OPTION
+				| XSP_MANUAL_SSELECT_OPTION);
+		if (Status != XST_SUCCESS)
+		{
+			printf("XSpi_SetOptions: XST_FAILURE\r\n");
+			return XST_FAILURE;
+		}
+
+		/*
+		 * Select the Intel Serial Flash device,  so that it can be
+		 * read and written using the SPI bus.
+		 */
+		Status = XSpi_SetSlaveSelect(SpiInstance + i, MIC_SPI_SELECT);
+		if(Status != XST_SUCCESS)
+		{
+			printf("XSpi_SetSlaveSelect: XST_FAILURE\r\n");
+			return XST_FAILURE;
+		}
+
+		/*
+		 * Start the SPI driver so that the device is enabled.
+		 */
+		XSpi_Start(SpiInstance + i);
+
+		/*
+		 * Disable Global interrupt to use polled mode operation
+		 */
+		XSpi_IntrGlobalDisable(SpiInstance + i);
+	}
+
+	return XST_SUCCESS;
+}
+
+
+
+#define TRANSFER_XTIME_COUNTS 2040
+
+void read_mic(int mic_num)
+{
+//	XTime start, end;
+
+	// Transmit the data.
+	for (int i = 0; i < MICBUFFSIZE; i++)
+	{
+//		XTime_GetTime(&start);
+		XSpi_Transfer(SpiInstance + 0, ReadBuffer, ReadBuffer, BUFFER_SIZE);
+		MicData[0][i] = (ReadBuffer[1] << 8) | (ReadBuffer[0]);
+//		XTime_GetTime(&end);
+
+//		printf("Time: %llu\t Seconds: %.12lf\r\n", end - start,   ( (1.0 * (double) (end - start) / COUNTS_PER_SECOND)));
+		// Sleep for one period of the sample rate.
+		usleep((1000000/SAMPLERATE) - (1000000 * TRANSFER_XTIME_COUNTS / COUNTS_PER_SECOND));
+	}
+}
+
+void send_data_chunk()
+{
+	// Keyword "Start" followed by the number of bytes
+	printf("Start %u\r\n", MICBUFFSIZE);
+	for (int i = 0; i < MICBUFFSIZE; i++)
+	{
+		printf("%03x", MicData[0][i]);
+	}
+}
+
+void send_data()
+{
+	printf("Start\r\n");
+	for (int i = 0; i < MICBUFFSIZE; i++)
+	{
+		printf("%u\r\n", MicData[0][i]);
+	}
+	printf("End\r\n");
+}

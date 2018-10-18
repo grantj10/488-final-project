@@ -1,0 +1,75 @@
+/*
+ * mic3.h
+ *
+ *  Created on: Apr 21, 2018
+ *      Author: drp1
+ */
+
+#ifndef SRC_MIC3_H_
+#define SRC_MIC3_H_
+#include "platform.h"
+#include "xparameters.h"
+
+/************************** Constant Definitions *****************************/
+
+/*
+ * The following constants map to the XPAR parameters created in the
+ * xparameters.h file. They are defined here such that a user can easily
+ * change all the needed parameters in one place.
+ */
+#define SPI_DEVICE_ID		XPAR_SPI_0_DEVICE_ID
+
+/*
+ *  This is the size of the buffer to be transmitted/received in this example.
+ */
+#define BUFFER_SIZE		2
+
+/*
+ * The following constant defines the slave select signal that is used to
+ * to select the Flash device on the SPI bus, this signal is typically
+ * connected to the chip select of the device.
+ */
+#define MIC_SPI_SELECT 0x01
+
+
+/**************************** Type Definitions *******************************/
+
+/*
+ * The following data type is used to send and receive data on the SPI
+ * interface.
+ */
+typedef u8 DataBuffer[BUFFER_SIZE];
+
+
+/***************** Macros (Inline Functions) Definitions *********************/
+
+
+/************************** Function Prototypes ******************************/
+void Send_Data();
+void Read_Mic();
+
+
+/************************** Variable Definitions *****************************/
+
+/*
+ * The instances to support the device drivers are global such that the
+ * are initialized to zero each time the program runs.
+ */
+static XSpi  SpiInstance;	 /* The instance of the SPI device */
+XSpi* SpiInstancePtr;
+/*
+ * The following variables are used to read and write to the  Spi device, they
+ * are global to avoid having large buffers on the stack.
+ */
+u8 ReadBuffer[BUFFER_SIZE];
+
+
+#define MICBUFFSIZE 1024
+#define SAMPLERATE 40000
+u16 Mic1Data[MICBUFFSIZE];
+u32 Mic1Index = 0;
+
+
+
+
+#endif /* SRC_MIC3_H_ */

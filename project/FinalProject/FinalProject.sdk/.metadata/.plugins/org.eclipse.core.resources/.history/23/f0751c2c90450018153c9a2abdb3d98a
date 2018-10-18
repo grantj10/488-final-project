@@ -1,0 +1,18 @@
+#include <stdio.h>
+#include "platform.h"
+#include "xil_printf.h"
+#include "sleep.h"
+#include "xparameters.h"
+#include "xtime_l.h"
+
+
+#include "controller.h"
+#include "mic.h"
+#include "utils.h"
+
+int main()
+{
+
+    return 0;
+}
+

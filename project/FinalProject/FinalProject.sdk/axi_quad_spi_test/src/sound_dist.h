@@ -1,0 +1,35 @@
+/*
+ * sound_disc.h
+ *
+ *  Created on: Apr 27, 2018
+ *      Author: drp1
+ */
+
+#ifndef SRC_SOUND_DIST_H_
+#define SRC_SOUND_DIST_H_
+
+void sound_dist_init();
+void sound_dist_calc();
+
+	//
+	//       __________________
+	//     / |     /         / |
+	//    /  |    /         /  |
+	//	 /-------4---------/   |
+	//	|    |   |         |   |
+	//	|    LU  |    RU   |   |
+	//	|  2 |   |         | 3 |
+	//	|    |___|_________|___|
+	//	|    /   |         |  /
+	//	|   /    |         | /
+	//	|  / LB  |    RB   |/
+	//	| /      |         |
+	//	---------1---------
+
+	//	If mic 1 detects before mic 4, then it will be in the lower half of quadrants (facing the box LB and RB)
+	//  If mic 4 detects before mic 1, then it will be in the upper half of quadrants (facing the box LU and RU)
+	//  If mic 2 detects before mic 3, then it will be in the left half of quadrants (facing the box LU and LB)
+	//  If mic 3 detects before mic 2, then it will be in the right half of quadrants (facing the box RU and RB)
+
+	// Intensity can be used to determine length away: Power of source/ (4pi * r^2) = Intensity
+#endif /* SRC_SOUND_DIST_H_ */

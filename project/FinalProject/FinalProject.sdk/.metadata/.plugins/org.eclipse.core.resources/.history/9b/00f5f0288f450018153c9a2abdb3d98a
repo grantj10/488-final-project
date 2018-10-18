@@ -1,0 +1,44 @@
+/*
+ * mic3.c
+ *
+ *  Created on: Apr 21, 2018
+ *      Author: drp1
+ */
+
+#include "mic3.h"
+
+
+
+void Send_Data(){
+//	usleep(1000000);
+	printf("Start\r\n");
+	for (int i = 0; i < MICBUFFSIZE; i++) {
+		printf("%u\r\n", Mic1Data[i]);
+	}
+	printf("End\r\n");
+//	usleep(1000000);
+}
+
+void Read_Mic(){
+	// Transmit the data.
+	for (int i = 0; i < MICBUFFSIZE; i++) {
+		XSpi_Transfer(SpiInstancePtr, ReadBuffer, ReadBuffer, BUFFER_SIZE);
+
+		Mic1Data[i] = (ReadBuffer[1] << 8) | (ReadBuffer[0]);
+//		printf("[%i]: "BYTE_TO_BINARY_PATTERN" "BYTE_TO_BINARY_PATTERN"\n", i, BYTE_TO_BINARY(ReadBuffer[1]), BYTE_TO_BINARY(ReadBuffer[0]));
+//		printf("%u\r\n", Mic1Data[i]);
+
+		// Sleep for one period of the sample rate.
+		usleep((1000000/SAMPLERATE));
+	}
+}
+
+void Send_Data_Bytes(){
+		printf("Start\r\n");
+		for (int i = 0; i < MICBUFFSIZE; i++) {
+			printf("%04x\r\n", Mic1Data[i]);
+		}
+		printf("End\r\n");
+	//	usleep(1000000);
+}
+

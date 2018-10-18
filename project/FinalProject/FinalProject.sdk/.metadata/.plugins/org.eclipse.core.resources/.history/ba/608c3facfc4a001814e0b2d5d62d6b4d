@@ -1,0 +1,173 @@
+/*
+ * mic.c
+ *
+ *  Created on: Apr 21, 2018
+ *      Author: drp1
+ */
+
+#include "mic.h"
+#include <stdio.h>
+#include "xil_printf.h"
+#include "sleep.h"
+#include "time.h"
+#include "xtime_l.h"
+#include "xuartps_hw.h"
+
+
+/************************** Variable Definitions *****************************/
+
+/*
+ * The instances to support the device drivers are global such that the
+ * are initialized to zero each time the program runs.
+ */
+XSpi SpiInstance[4];	 /* The instance of the SPI device */
+
+
+/**************************** Type Definitions *******************************/
+const u8 MicSpiId[] ={
+		 XPAR_SPI_0_DEVICE_ID,
+		 XPAR_SPI_1_DEVICE_ID,
+		 XPAR_SPI_2_DEVICE_ID,
+		 XPAR_SPI_3_DEVICE_ID};
+
+/*
+ *  This is the size of the buffer to be transmitted/received in this example.
+ */
+#define BUFFER_SIZE 2
+
+/*
+ * The following constant defines the slave select signal that is used to
+ * to select the Flash device on the SPI bus, this signal is typically
+ * connected to the chip select of the device.
+ */
+#define MIC_SPI_SELECT 0x01
+
+
+/*
+ * The following data type is used to send and receive data on the SPI
+ * interface.
+ */
+typedef u8 DataBuffer[BUFFER_SIZE];
+
+
+/*
+ * The following variables are used to read and write to the  Spi device, they
+ * are global to avoid having large buffers on the stack.
+ */
+u8 ReadBuffer[BUFFER_SIZE];
+
+#define TRANSFER_XTIME_COUNTS 2040
+
+
+/************************** Function Definitions ******************************/
+
+int mic_setup()
+{
+	int Status;
+
+	for (int i = 0; i < NUM_MICS; ++i)
+	{
+
+		XSpi_Config *ConfigPtr;	/* Pointer to Configuration data */
+
+		/*
+		 * Initialize the SPI driver so that it is  ready to use.
+		 */
+		ConfigPtr = XSpi_LookupConfig(MicSpiId[i]);
+		if (ConfigPtr == NULL)
+		{
+			printf("XSpi_LookupConfig: XST_DEVICE_NOT_FOUND\r\n");
+			return XST_DEVICE_NOT_FOUND;
+		}
+
+		Status = XSpi_CfgInitialize(SpiInstance + i, ConfigPtr, ConfigPtr->BaseAddress);
+		if (Status != XST_SUCCESS)
+		{
+			printf("XSpi_CfgInitialize: XST_FAILURE\r\n");
+			return XST_FAILURE;
+		}
+
+
+		/*
+		 * Set the Spi device as a master and in loopback mode.
+		 */
+		Status = XSpi_SetOptions(SpiInstance + i, XSP_MASTER_OPTION
+				| XSP_CLK_ACTIVE_LOW_OPTION
+	//				| XSP_CLK_PHASE_1_OPTION
+				| XSP_MANUAL_SSELECT_OPTION);
+		if (Status != XST_SUCCESS)
+		{
+			printf("XSpi_SetOptions: XST_FAILURE\r\n");
+			return XST_FAILURE;
+		}
+
+		/*
+		 * Select the Intel Serial Flash device,  so that it can be
+		 * read and written using the SPI bus.
+		 */
+		Status = XSpi_SetSlaveSelect(SpiInstance + i, MIC_SPI_SELECT);
+		if(Status != XST_SUCCESS)
+		{
+			printf("XSpi_SetSlaveSelect: XST_FAILURE\r\n");
+			return XST_FAILURE;
+		}
+
+		/*
+		 * Start the SPI driver so that the device is enabled.
+		 */
+		XSpi_Start(SpiInstance + i);
+
+		/*
+		 * Disable Global interrupt to use polled mode operation
+		 */
+		XSpi_IntrGlobalDisable(SpiInstance + i);
+	}
+
+	return XST_SUCCESS;
+}
+
+
+
+
+
+void read_all_mics()
+{
+	for (int i = 0; i < MICBUFFSIZE; i++)
+	{
+		for (int n = 0; n < NUM_MICS; n++){
+			XSpi_Transfer(SpiInstance + n, ReadBuffer, ReadBuffer, BUFFER_SIZE);
+			MicData[n][i] = ((u16)ReadBuffer[1] << 8) | (ReadBuffer[0]);
+		}
+	}
+}
+
+void send_data_chunks()
+{
+
+	for (int n = 0; n < NUM_MICS; n++)
+	{
+		printf("Mic:%d SampleRate:%d Length:%u\r\n", n, SAMPLERATE, MICBUFFSIZE);
+		for (int i = 0; i < MICBUFFSIZE; i++)
+		{
+
+	//		while(!(0x0003 & Xil_In32(XPAR_PS7_UART_0_BASEADDR + (u32)XUARTPS_SR_OFFSET))){
+	//			// Wait until not full
+	//		}
+			printf("%03x", MicData[n][i] & 0xFFF);
+			usleep(1000);
+		}
+		printf("\r\n");
+	}
+}
+
+
+/***
+ *
+ */
+void normalize_signal()
+{
+	for (int i = 0; i < MICBUFFSIZE; i++)
+		for (int n = 0; n < NUM_MICS; n++)
+			MicSignal[n][i] = (MicData[n][i] * (1.0 / 4095.0) * 2.0) - 1.0;
+}
+

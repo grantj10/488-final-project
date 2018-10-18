@@ -1,0 +1,33 @@
+11:16:42 **** Incremental Build of configuration Debug for project standalone_bsp_0_xspi_intr_example_1 ****
+make pre-build main-build 
+a9-linaro-pre-build-step
+' '
+'Building file: ../src/xspi_intr_example.c'
+'Invoking: ARM v7 gcc compiler'
+arm-none-eabi-gcc -Wall -O0 -g3 -c -fmessage-length=0 -MT"src/xspi_intr_example.o" -mcpu=cortex-a9 -mfpu=vfpv3 -mfloat-abi=hard -I../../standalone_bsp_0/ps7_cortexa9_0/include -MMD -MP -MF"src/xspi_intr_example.d" -MT"src/xspi_intr_example.o" -o "src/xspi_intr_example.o" "../src/xspi_intr_example.c"
+../src/xspi_intr_example.c: In function 'main':
+../src/xspi_intr_example.c:183:27: error: 'IntcInstance' undeclared (first use in this function)
+  Status = SpiIntrExample(&IntcInstance,
+                           ^~~~~~~~~~~~
+../src/xspi_intr_example.c:183:27: note: each undeclared identifier is reported only once for each function it appears in
+../src/xspi_intr_example.c:90:24: error: 'XPAR_INTC_0_SPI_0_VEC_ID' undeclared (first use in this function)
+ #define SPI_IRPT_INTR  XPAR_INTC_0_SPI_0_VEC_ID
+                        ^
+../src/xspi_intr_example.c:186:5: note: in expansion of macro 'SPI_IRPT_INTR'
+     SPI_IRPT_INTR);
+     ^~~~~~~~~~~~~
+../src/xspi_intr_example.c: In function 'SpiSetupIntrSystem':
+../src/xspi_intr_example.c:89:25: error: 'XPAR_INTC_0_DEVICE_ID' undeclared (first use in this function)
+ #define INTC_DEVICE_ID  XPAR_INTC_0_DEVICE_ID
+                         ^
+../src/xspi_intr_example.c:451:36: note: in expansion of macro 'INTC_DEVICE_ID'
+  IntcConfig = XScuGic_LookupConfig(INTC_DEVICE_ID);
+                                    ^~~~~~~~~~~~~~
+At top level:
+../src/xspi_intr_example.c:139:13: warning: 'Intc' defined but not used [-Wunused-variable]
+ static INTC Intc;  /* The instance of the Interrupt Controller */
+             ^~~~
+make: *** [src/xspi_intr_example.o] Error 1
+
+11:16:42 Build Finished (took 229ms)
+
